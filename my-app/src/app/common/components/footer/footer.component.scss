@@ -1,0 +1,21 @@
+.footer {
+    position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  &-container {
+    background: #475569;
+    padding: 0.375rem 3.5rem;
+  }
+  &-text {
+    font-size: 0.875rem;
+    &_bold {
+      font-weight: 700;
+      color: white;
+    }
+    &_normal {
+      font-weight: 500;
+      color: white;
+    }
+  }
+}

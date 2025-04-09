@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.scss";
+
+body {
+  overflow-x: hidden;
+  background-position-x: center;
+  background-color: #e2e8f0;
+  display: flex;
+  color: rgb(0, 0, 0);
+  margin: 0;
+}
+.title {
+  color: #1E293B;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.text-sm {
+  color: #64748B;
+  font-size: 0.875rem;
+}

@@ -1,0 +1,9 @@
+.header {
+  &_container {
+    background: white;
+    padding: 0.75rem 3rem 0.75rem 3.5rem;
+  }
+}
+::ng-deep .btn.p-button.p-button-sm {
+  padding: 0.65625rem 0rem;
+}
