@@ -12,8 +12,11 @@
   gap: 0.5rem;
 }
 ::ng-deep .p-card .p-card-content {
-    padding: 0;
+  padding: 0;
 }
 ::ng-deep .p-card .p-card-body {
-    padding: 0;
+  padding: 0;
 }
+::ng-deep .top-rated .p-card {
+    background: #eff6ff;
+  }

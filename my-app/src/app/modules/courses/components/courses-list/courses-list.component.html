@@ -17,9 +17,14 @@
     </div>
     <p-button icon="pi pi-plus" label="Добавить курс"></p-button>
   </div>
+  @if (courses().length > 0) {
   <div class="col-12 flex flex-column gap-3">
-    @for (course of courses(); track course.id) {
-      <app-course [course]="course" (change)="onChange($event)" (delete)="onDelete($event)"></app-course>
+    @for (course of courses() | orderBy; track course.id) {
+    <app-course
+      [course]="course"
+      (change)="onChange($event)"
+      (delete)="onDelete($event)"
+    ></app-course>
     }
   </div>
   <div class="col-12 flex justify-content-center mb-4">
@@ -31,4 +36,27 @@
       (click)="onLoad()"
     ></p-button>
   </div>
+  } @if (courses().length == 0) {
+  <div class="col-12">
+    <p-card>
+      <div class="empty">
+        <svg
+          width="168"
+          height="168"
+          viewBox="0 0 168 168"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="168" height="168" rx="84" fill="#DBEAFE" />
+          <path
+            d="M84 57C78.6599 57 73.4397 58.5835 68.9996 61.5503C64.5595 64.5171 61.0988 68.7339 59.0553 73.6675C57.0117 78.6012 56.477 84.03 57.5188 89.2674C58.5606 94.5049 61.1321 99.3159 64.9081 103.092C68.6841 106.868 73.4951 109.439 78.7326 110.481C83.9701 111.523 89.3989 110.988 94.3325 108.945C99.2661 106.901 103.483 103.441 106.45 99.0004C109.416 94.5603 111 89.3401 111 84C111 76.8392 108.155 69.9716 103.092 64.9081C98.0284 59.8446 91.1609 57 84 57ZM61.5 84C61.4955 78.8113 63.2988 73.7831 66.6 69.78L98.22 101.4C94.9277 104.1 90.9358 105.81 86.7094 106.329C82.483 106.848 78.1961 106.156 74.348 104.332C70.5 102.509 67.2493 99.6295 64.9747 96.0298C62.7 92.4301 61.495 88.2582 61.5 84ZM101.4 98.22L69.78 66.6C74.0927 63.0707 79.563 61.2699 85.1288 61.5472C90.6946 61.8245 95.9588 64.1601 99.8994 68.1007C103.84 72.0412 106.176 77.3054 106.453 82.8712C106.73 88.437 104.929 93.9073 101.4 98.22Z"
+            fill="#3B82F6"
+          />
+        </svg>
+        <span class="empty_text"> Ничего не найдено </span>
+        <p-button label="Сбросить фильтры" styleClass="p-button-sm"></p-button>
+      </div>
+    </p-card>
+  </div>
+  }
 </div>

@@ -9,6 +9,9 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
+import { CardModule } from 'primeng/card';
+import { OrderByPipe } from 'src/app/common/pipes/order-by.pipe';
+import { FilterPipe } from 'src/app/common/pipes/filter.pipe';
 
 @Component({
   selector: 'app-courses-list',
@@ -22,46 +25,58 @@ import { FormsModule } from '@angular/forms';
     InputTextModule,
     IconFieldModule,
     InputIconModule,
+    CardModule,
+    OrderByPipe,
   ],
   templateUrl: './courses-list.component.html',
   styleUrl: './courses-list.component.scss',
+  providers: [FilterPipe],
 })
 export class CoursesListComponent implements OnInit {
+  allCourses: Course[] = [
+    {
+      id: this.helper.uuid(),
+      topRated: Math.random() > 0.5,
+      creationDate: this.helper.generateDate(),
+      title: 'Reprehenderit est veniam elit',
+      duration: this.helper.generateDuration(),
+      description:
+        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
+    },
+    {
+      id: this.helper.uuid(),
+      topRated: Math.random() > 0.5,
+      creationDate: this.helper.generateDate(),
+      title: 'Reprehenderit est veniam elit 2',
+      duration: this.helper.generateDuration(),
+      description:
+        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
+    },
+    {
+      id: this.helper.uuid(),
+      topRated: Math.random() > 0.5,
+      creationDate: this.helper.generateDate(),
+      title: 'Reprehenderit est veniam elit 3',
+      duration: this.helper.generateDuration(),
+      description:
+        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
+    },
+  ];
   courses = signal<Course[]>([]);
   searchParam!: string;
 
-  constructor(private helper: HelperService) {}
+  constructor(private helper: HelperService, private filterPipe: FilterPipe) {}
 
   ngOnInit(): void {
-    this.courses.set([
-      {
-        id: this.helper.uuid(),
-        creationDate: new Date(),
-        title: 'Reprehenderit est veniam elit',
-        duration: this.helper.generateDuration(),
-        description:
-          'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-      },
-      {
-        id: this.helper.uuid(),
-        creationDate: new Date(),
-        title: 'Reprehenderit est veniam elit 2',
-        duration: this.helper.generateDuration(),
-        description:
-          'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-      },
-      {
-        id: this.helper.uuid(),
-        creationDate: new Date(),
-        title: 'Reprehenderit est veniam elit 3',
-        duration: this.helper.generateDuration(),
-        description:
-          'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-      },
-    ]);
+    this.courses.set(this.allCourses);
   }
 
   onSearch(): void {
+    this.courses.set(
+      this.searchParam
+        ? this.filterPipe.transform(this.allCourses, this.searchParam)
+        : this.allCourses
+    );
     console.log('Search', this.searchParam);
   }
 

@@ -20,4 +20,13 @@ export class HelperService {
   generateDuration(): number {
     return Number((Math.random() * 1000).toFixed(0));
   }
+
+  generateDate(): Date {
+    return new Date(
+      new Date().setHours(
+        new Date().getHours() +
+          +((Math.random() < 0.5 ? -1 : 1) * Math.random() * 1000).toFixed(0)
+      )
+    );
+  }
 }
