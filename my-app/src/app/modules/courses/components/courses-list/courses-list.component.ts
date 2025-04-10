@@ -15,6 +15,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/common/services/helper.service';
+import { takeUntil } from 'rxjs';
+import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubscribe.directive';
 
 @Component({
   selector: 'app-courses-list',
@@ -35,9 +37,13 @@ import { HelperService } from 'src/app/common/services/helper.service';
   styleUrl: './courses-list.component.scss',
   providers: [FilterPipe, ConfirmationService, MessageService],
 })
-export class CoursesListComponent implements OnInit {
+export class CoursesListComponent
+  extends AutoUnsubscribeDirective
+  implements OnInit
+{
   courses = signal<Course[]>([]);
   searchParam!: string;
+  page = 1;
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -46,22 +52,34 @@ export class CoursesListComponent implements OnInit {
     private router: Router,
     private helper: HelperService,
     private coursesService: CoursesService
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
-    this.courses.set(this.coursesService.getCourses());
+    this.getCourses();
+  }
+
+  getCourses(): void {
+    this.coursesService
+      .getCourses(this.page)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data) => {
+        this.courses.set(data);
+      });
   }
 
   onSearch(): void {
-    this.courses.set(
-      this.searchParam
-        ? this.filterPipe.transform(
-            this.coursesService.getCourses(),
-            this.searchParam
-          )
-        : this.coursesService.getCourses()
-    );
-    console.log('Search', this.searchParam);
+    if (this.searchParam) {
+      this.coursesService
+        .getListByTitle(this.searchParam)
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe((data) => {
+          this.courses.set(data);
+        });
+    } else {
+      this.getCourses();
+    }
   }
 
   onChange(course: Course): void {
@@ -86,17 +104,14 @@ export class CoursesListComponent implements OnInit {
       rejectIcon: 'none',
 
       accept: () => {
-        this.courses.set(this.coursesService.removeCourse(data.id));
-        this.messageService.add({
-          severity: 'error',
-          detail: 'Курс удален',
-        });
+        this.deleteCourse(data.id);
       },
     });
   }
 
   onLoad(): void {
-    console.log('Some text');
+    this.page += 1;
+    this.getCourses();
   }
 
   onAdd(): void {
@@ -105,5 +120,18 @@ export class CoursesListComponent implements OnInit {
       routerLink: '/courses/new',
     });
     this.router.navigate(['courses/new']);
+  }
+
+  deleteCourse(id: string | number): void {
+    this.coursesService
+      .removeCourse(id)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => {
+        this.messageService.add({
+          severity: 'error',
+          detail: 'Курс удален',
+        });
+        this.getCourses();
+      });
   }
 }

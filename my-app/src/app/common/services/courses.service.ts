@@ -1,70 +1,50 @@
 import { Injectable } from '@angular/core';
 import { Course } from '../models/courses.model';
 import { HelperService } from './helper.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CoursesService {
-  courses: Course[] = [
-    {
-      id: this.helper.uuid(),
-      topRated: Math.random() > 0.5,
-      creationDate: this.helper.generateDate(),
-      title: 'Reprehenderit est veniam elit',
-      duration: this.helper.generateDuration(),
-      description:
-        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-    },
-    {
-      id: this.helper.uuid(),
-      topRated: Math.random() > 0.5,
-      creationDate: this.helper.generateDate(),
-      title: 'Reprehenderit est veniam elit 2',
-      duration: this.helper.generateDuration(),
-      description:
-        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-    },
-    {
-      id: this.helper.uuid(),
-      topRated: Math.random() > 0.5,
-      creationDate: this.helper.generateDate(),
-      title: 'Reprehenderit est veniam elit 3',
-      duration: this.helper.generateDuration(),
-      description:
-        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-    },
-  ];
+  private url: string = 'http://localhost:3000';
+  courses: Course[] = [];
 
-  constructor(private helper: HelperService) {}
+  constructor(private helper: HelperService, private http: HttpClient) {}
 
-  getCourses(): Course[] {
-    return this.courses;
+  getEmptyCourse(): Course {
+    const newCourse = {} as Course;
+    newCourse.id = this.helper.uuid();
+    return newCourse;
   }
 
-  removeCourse(id: string | number): Course[] {
-    this.courses = this.courses.filter((item) => {
-      return item.id !== id;
+  getCourses(page: number): Observable<Course[]> {
+    const params = new HttpParams({
+      fromObject: { _start: 0, _limit: 5 * page, _sort: '-creationDate' },
     });
-    return this.courses;
+    return this.http.get<Course[]>(`${this.url}/courses`, { params });
   }
 
-  getCourseById(id: string | number): Course {
-    return (
-      this.courses.find((item) => {
-        return item.id === id;
-      }) || ({} as Course)
-    );
+  removeCourse(id: string | number): Observable<Object> {
+    return this.http.delete(`${this.url}/courses/${id}`);
   }
 
-  updateCourse(course: Course): void {
-    let courseInList = this.courses.find((item) => {
-      return item.id === course.id;
+  getCourseById(id: string | number): Observable<Course> {
+    return this.http.get<Course>(`${this.url}/courses/${id}`);
+  }
+
+  updateCourse(newCourse: Course): Observable<Course> {
+    return this.http.put<Course>(`${this.url}/courses/${newCourse.id}`, {
+      ...newCourse,
     });
-    courseInList = course;
   }
 
-  createCourse(course: Course): void {
-    this.courses.push(course);
+  createCourse(newCourse: Course): Observable<Course> {
+    return this.http.post<Course>(`${this.url}/courses/`, { ...newCourse });
+  }
+
+  getListByTitle(title: string): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.url}/courses?title=${title.toLowerCase()}`);
   }
 }

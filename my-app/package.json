@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 7777",
+    "start": "concurrently --kill-others \"npm run server\" \"npm run proxy\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "tslint --project tsconfig.json"
+    "lint": "tslint --project tsconfig.json",
+    "proxy": "ng serve --port 7777 --proxy-config proxy.conf.json",
+    "server": "json-server --watch db.json"
   },
   "private": true,
   "dependencies": {
@@ -22,6 +24,8 @@
     "@angular/platform-browser": "17.3.7",
     "@angular/platform-browser-dynamic": "17.3.7",
     "@angular/router": "17.3.7",
+    "concurrently": "^9.1.2",
+    "json-server": "^1.0.0-beta.3",
     "primeflex": "^3.0.0",
     "primeicons": "~6.0.1",
     "primeng": "^17.16.1",

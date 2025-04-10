@@ -1,67 +1,67 @@
 <div class="my-5">
   <p-card>
-    <ng-container *ngIf="course">
-      <div class="grid fluid p-4">
-        <div class="col lg:col-8 md:col-10 col-12">
-          <div class="col-12 mb-2 pt-0">
-            <h2 style="margin: 0">Новый курс</h2>
-          </div>
-          <div class="col-10 mb-2">
-            <span class="p-float-label">
-              <input
-                inputId="title"
-                type="text"
-                [(ngModel)]="course.title"
-                pInputText
-              />
-              <label for="login">Логин</label>
-            </span>
-          </div>
-          <div class="col-10 mb-2">
-            <span class="p-float-label">
-              <textarea
-                id="comment"
-                [rows]="5"
-                pInputTextarea
-                [autofocus]="true"
-                [autoResize]="true"
-                [(ngModel)]="course.description"
-              ></textarea>
-              <label for="comment">
-                <span>Описание</span>
-              </label>
-            </span>
-          </div>
-          <div class="col-12 mb-2">
-            <app-duration [course]="course"></app-duration>
-          </div>
-          <div class="col-10 mb-2">
-            <span class="p-float-label">
-              <p-calendar
-                lxocalizedCalendar
-                [(ngModel)]="course.creationDate"
-                dateFormat="dd/mm/yy"
-                appendTo="body"
-                [showIcon]="true"
-              ></p-calendar>
-              <label for="signingDate">
-                <span>Дата</span>
-              </label>
-            </span>
-          </div>
-          <div class="col-10 mb-4">
-            <app-authors></app-authors>
-          </div>
-          <div class="flex">
-            <p-button
-              label="Отмена"
-              styleClass="p-button p-button-text"
-              (click)="onCancel()"
-            ></p-button>
-            <p-button label="Сохранить" (click)="onSave()"></p-button>
-          </div>
+    @if (course()) {
+    <div class="grid fluid p-4">
+      <div class="col lg:col-8 md:col-10 col-12">
+        <div class="col-12 mb-2 pt-0">
+          <h2 style="margin: 0">Новый курс</h2>
+        </div>
+        <div class="col-10 mb-2">
+          <span class="p-float-label">
+            <input
+              inputId="title"
+              type="text"
+              [(ngModel)]="course().title"
+              pInputText
+            />
+            <label for="login">Логин</label>
+          </span>
+        </div>
+        <div class="col-10 mb-2">
+          <span class="p-float-label">
+            <textarea
+              id="comment"
+              [rows]="5"
+              pInputTextarea
+              [autofocus]="true"
+              [autoResize]="true"
+              [(ngModel)]="course().description"
+            ></textarea>
+            <label for="comment">
+              <span>Описание</span>
+            </label>
+          </span>
+        </div>
+        <div class="col-12 mb-2">
+          <app-duration [course]="course()"></app-duration>
+        </div>
+        <div class="col-10 mb-2">
+          <span class="p-float-label">
+            <p-calendar
+              lxocalizedCalendar
+              [(ngModel)]="course().creationDate"
+              dateFormat="dd/mm/yy"
+              appendTo="body"
+              [showIcon]="true"
+            ></p-calendar>
+            <label for="signingDate">
+              <span>Дата</span>
+            </label>
+          </span>
+        </div>
+        <div class="col-10 mb-4">
+          <app-authors></app-authors>
+        </div>
+        <div class="flex">
+          <p-button
+            label="Отмена"
+            styleClass="p-button p-button-text"
+            (click)="onCancel()"
+          ></p-button>
+          <p-button label="Сохранить" (click)="onSave()"></p-button>
         </div>
       </div>
-    </ng-container>
+    </div>
+    }
   </p-card>
 </div>

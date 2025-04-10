@@ -4,6 +4,7 @@ import {
   Component,
   Input,
   OnInit,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -18,6 +19,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DurationComponent } from './duration/duration.component';
 import { AuthorsComponent } from './authors/authors.component';
 import { CoursesService } from 'src/app/common/services/courses.service';
+import { takeUntil } from 'rxjs';
+import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubscribe.directive';
 
 @Component({
   selector: 'app-course-params',
@@ -38,38 +41,56 @@ import { CoursesService } from 'src/app/common/services/courses.service';
   styleUrl: './course-params.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CourseParamsComponent implements OnInit {
-  @Input() course!: Course;
+export class CourseParamsComponent
+  extends AutoUnsubscribeDirective
+  implements OnInit
+{
+  course = signal<Course>({} as Course);
+  isNew!: boolean;
 
   constructor(
     private coursesService: CoursesService,
     private activeRout: ActivatedRoute,
     private helper: HelperService,
-    private router: Router,
-  ) {}
+    private router: Router
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
-    if (this.activeRout.snapshot.params['id']) {
-      this.course = this.coursesService.getCourseById(
-        this.activeRout.snapshot.params['id']
-      );
+    this.isNew = this.activeRout.snapshot.params['id'] ? false : true
+    if (!this.isNew) {
+      this.coursesService
+        .getCourseById(this.activeRout.snapshot.params['id'])
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe((data) => {
+          this.course.set(data);
+        });
     } else {
-      this.course = {} as Course;
-      this.course.id = this.helper.uuid();
+      this.course.set({ id: this.helper.uuid() } as Course);
     }
   }
 
   onSave(): void {
-    if (this.activeRout.snapshot.params['id']) {
-      this.coursesService.updateCourse(this.course);
+    if (this.isNew) {
+      this.coursesService
+        .createCourse(this.course())
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe((data) => {
+          this.onCancel();
+        });
     } else {
-      this.coursesService.createCourse(this.course);
+      this.coursesService
+        .updateCourse(this.course())
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe((data) => {
+          this.onCancel();
+        });
     }
-    this.onCancel()
   }
 
   onCancel(): void {
-    this.helper.breadcrumbsItems$.next({routerLink: '/courses'})
-    this.router.navigate(['/courses'])
+    this.helper.breadcrumbsItems$.next({ routerLink: '/courses' });
+    this.router.navigate(['/courses/list']);
   }
 }

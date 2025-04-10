@@ -5,4 +5,11 @@ export type Course = {
     duration: number;
     description: string;
     topRated?: boolean;
+    authors: Author[];
+}
+
+export type Author = {
+    id: number;
+    lastName: string;
+    name: string;
 }

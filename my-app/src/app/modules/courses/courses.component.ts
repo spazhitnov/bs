@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -16,5 +17,5 @@ export class CoursesComponent implements OnInit {
 
   ngOnInit(): void {
     this.router.navigate(['/courses/list']);
-  }
+  } 
 }
