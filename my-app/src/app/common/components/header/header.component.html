@@ -1,9 +1,10 @@
 <div class="flex justify-content-between align-items-center header_container">
   <app-logo style="height: 40px"></app-logo>
+  @if (isAuth()) {
   <div class="flex">
     <p-button
       icon="pi pi-user"
-      label="Тест Тест"
+      [label]="getUserFIO()"
       styleClass="p-button-sm p-button-secondary p-button-text header-btn btn"
     ></p-button>
 
@@ -11,6 +12,8 @@
       icon="pi pi-sign-out"
       label="Выход"
       styleClass="p-button-sm p-button-secondary p-button-text header-btn btn"
+      (click)="logout.emit()"
     ></p-button>
   </div>
+  }
 </div>

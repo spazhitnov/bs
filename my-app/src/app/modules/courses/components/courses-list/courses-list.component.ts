@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { Course } from 'src/app/common/models/courses.model';
-import { HelperService } from 'src/app/common/services/helper.service';
 import { CourseComponent } from './course/course.component';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -12,6 +11,10 @@ import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { OrderByPipe } from 'src/app/common/pipes/order-by.pipe';
 import { FilterPipe } from 'src/app/common/pipes/filter.pipe';
+import { CoursesService } from 'src/app/common/services/courses.service';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { BrowserModule } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-courses-list',
@@ -27,55 +30,35 @@ import { FilterPipe } from 'src/app/common/pipes/filter.pipe';
     InputIconModule,
     CardModule,
     OrderByPipe,
+    ConfirmDialogModule,
   ],
   templateUrl: './courses-list.component.html',
   styleUrl: './courses-list.component.scss',
-  providers: [FilterPipe],
+  providers: [FilterPipe, ConfirmationService, MessageService],
 })
 export class CoursesListComponent implements OnInit {
-  allCourses: Course[] = [
-    {
-      id: this.helper.uuid(),
-      topRated: Math.random() > 0.5,
-      creationDate: this.helper.generateDate(),
-      title: 'Reprehenderit est veniam elit',
-      duration: this.helper.generateDuration(),
-      description:
-        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-    },
-    {
-      id: this.helper.uuid(),
-      topRated: Math.random() > 0.5,
-      creationDate: this.helper.generateDate(),
-      title: 'Reprehenderit est veniam elit 2',
-      duration: this.helper.generateDuration(),
-      description:
-        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-    },
-    {
-      id: this.helper.uuid(),
-      topRated: Math.random() > 0.5,
-      creationDate: this.helper.generateDate(),
-      title: 'Reprehenderit est veniam elit 3',
-      duration: this.helper.generateDuration(),
-      description:
-        'Sunt culpa officia minim commodo eiusmod irure sunt nostrud. Mollit aliquip id occaecat officia proident anim dolor officia qui voluptate consectetur laborum. Duis incididunt culpa aliqua mollit do fugiat ea dolor mollit irure Lorem tempor.',
-    },
-  ];
   courses = signal<Course[]>([]);
   searchParam!: string;
 
-  constructor(private helper: HelperService, private filterPipe: FilterPipe) {}
+  constructor(
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private filterPipe: FilterPipe,
+    private coursesService: CoursesService
+  ) {}
 
   ngOnInit(): void {
-    this.courses.set(this.allCourses);
+    this.courses.set(this.coursesService.getCourses());
   }
 
   onSearch(): void {
     this.courses.set(
       this.searchParam
-        ? this.filterPipe.transform(this.allCourses, this.searchParam)
-        : this.allCourses
+        ? this.filterPipe.transform(
+            this.coursesService.getCourses(),
+            this.searchParam
+          )
+        : this.coursesService.getCourses()
     );
     console.log('Search', this.searchParam);
   }
@@ -84,8 +67,27 @@ export class CoursesListComponent implements OnInit {
     console.log('Changed', course);
   }
 
-  onDelete(id: string | number): void {
-    console.log('Deleted', id);
+  onDelete(data: { event: Event; id: string | number }): void {
+    this.confirmationService.confirm({
+      target: data.event.target as EventTarget,
+      message: 'Вы действительно хотите удалить этот курс?',
+      header: 'Удалить курс?',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-sm p-button-danger',
+      rejectButtonStyleClass: 'p-button-sm p-button-text p-button-text',
+      acceptLabel: 'Удалить',
+      rejectLabel: 'Отмена',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+
+      accept: () => {
+        this.courses.set(this.coursesService.removeCourse(data.id));
+        this.messageService.add({
+          severity: 'error',
+          detail: 'Курс удален',
+        });
+      },
+    });
   }
 
   onLoad(): void {

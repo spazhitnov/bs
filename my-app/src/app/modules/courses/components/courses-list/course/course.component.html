@@ -51,7 +51,7 @@
         <p-button
           icon="pi pi-trash"
           styleClass="p-button-sm p-button-text p-button-danger"
-          (click)="delete.emit(course.id)"
+          (click)="delete.emit({event: $event, id: course.id})"
         ></p-button>
       </div>
     </div>

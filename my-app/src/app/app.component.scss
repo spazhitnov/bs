@@ -18,5 +18,14 @@
   padding: 0;
 }
 ::ng-deep .top-rated .p-card {
-    background: #eff6ff;
-  }
+  background: #eff6ff;
+}
+::ng-deep .dialog.p-dialog {
+  width: 40rem;
+}
+::ng-deep .p-inputtext {
+  width: 100%;
+}
+::ng-deep .p-password {
+  width: 100%;
+}

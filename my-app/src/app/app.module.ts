@@ -7,6 +7,8 @@ import { HeaderComponent } from './common/components/header/header.component';
 import { CoursesModule } from './modules/courses/courses.module';
 import { registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AuthModule } from './modules/auth/auth.module';
 
 registerLocaleData(localeRu);
 
@@ -14,10 +16,12 @@ registerLocaleData(localeRu);
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     FooterComponent,
     HeaderComponent,
     CoursesModule,
+    AuthModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'ru' }],
   bootstrap: [AppComponent],

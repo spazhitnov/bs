@@ -16,5 +16,5 @@ import { IsnewcourseDirective } from 'src/app/common/directives/isnewcourse.dire
 export class CourseComponent {
   @Input() course!: Course;
   @Output() change = new EventEmitter<Course>();
-  @Output() delete = new EventEmitter<string | number>();
+  @Output() delete = new EventEmitter<{event: Event, id: string | number}>();
 }
