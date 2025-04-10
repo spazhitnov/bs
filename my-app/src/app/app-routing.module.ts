@@ -1,19 +1,29 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { coursesRoutes } from './modules/courses/courses-routes.model';
-import { AuthComponent } from './modules/auth/auth.component';
 import { AppComponent } from './app.component';
+import { NoPageComponent } from './common/components/no-page/no-page.component';
+import { provideGuardForPermission } from './common/services/guards/auth.guard';
 
 const routes: Routes = [
-  ...coursesRoutes,
+  // ...coursesRoutes,
+  {
+    path: 'courses',
+    loadChildren: () => import('./modules/courses/courses.module').then(mod => mod.CoursesModule),
+    canActivate: [provideGuardForPermission()],
+    canActivateChild: [provideGuardForPermission()],
+  },
   {
     path: 'auth',
-    component: AppComponent
+    component: AppComponent,
   },
   {
     path: '',
     redirectTo: 'auth',
-    pathMatch: 'full'
+    pathMatch: 'full',
+  },
+  {
+    path: '**',
+    component: NoPageComponent,
   },
 ];
 

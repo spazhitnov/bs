@@ -48,4 +48,23 @@ export class CoursesService {
     });
     return this.courses;
   }
+
+  getCourseById(id: string | number): Course {
+    return (
+      this.courses.find((item) => {
+        return item.id === id;
+      }) || ({} as Course)
+    );
+  }
+
+  updateCourse(course: Course): void {
+    let courseInList = this.courses.find((item) => {
+      return item.id === course.id;
+    });
+    courseInList = course;
+  }
+
+  createCourse(course: Course): void {
+    this.courses.push(course);
+  }
 }

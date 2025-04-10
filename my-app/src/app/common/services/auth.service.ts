@@ -6,6 +6,9 @@ import { Observable, of } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
+  canActivate(arg0: any, id: any): import("@angular/router").MaybeAsync<import("@angular/router").GuardResult> {
+    throw new Error('Method not implemented.');
+  }
   constructor() {}
 
   onLogin(user: Partial<User>): Observable<User> {
@@ -18,7 +21,7 @@ export class AuthService {
     localStorage.clear();
   }
 
-  isAuthenticated(user: Partial<User>): boolean {
+  isAuthenticated(): boolean {
     return localStorage.getItem('userToken') ? true : false;
   }
 

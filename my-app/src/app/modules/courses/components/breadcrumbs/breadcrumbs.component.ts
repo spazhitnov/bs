@@ -46,7 +46,15 @@ export class BreadcrumbsComponent
     this.helper.breadcrumbsItems$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((data: MenuItem) => {
-        this.items.set([...this.items(), data]);
+        if (data.routerLink === '/courses') {
+          this.items.set(
+            this.items().filter((item) => {
+              return item.routerLink === '/courses';
+            })
+          );
+        } else {
+          this.items.set([...this.items(), data]);
+        }
       });
   }
 }

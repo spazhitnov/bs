@@ -2,13 +2,12 @@
     <div class="col-10 flex-auto">
       <span class="p-float-label">
         <p-inputNumber
-          [(ngModel)]="duration"
+          [(ngModel)]="course.duration"
           mode="decimal"
           [showButtons]="true"
           inputId="duration"
           [min]="0"
           [max]="1000"
-          styleClass="test"
         >
         </p-inputNumber>
         <label for="duration">
@@ -17,8 +16,8 @@
       </span>
     </div>
     <div class="col-2">
-      <span style="vertical-align: -webkit-baseline-middle">{{
-        duration || 0 | duration
+      <span style="vertical-align: -webkit-baseline-middle; white-space: nowrap;">{{
+        course.duration || 0 | duration
       }}</span>
     </div>
   </div>

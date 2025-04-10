@@ -65,7 +65,11 @@ export class CoursesListComponent implements OnInit {
   }
 
   onChange(course: Course): void {
-    console.log('Changed', course);
+    this.helper.breadcrumbsItems$.next({
+      label: course.title,
+      routerLink: `/courses/${course.id}`,
+    });
+    this.router.navigate([`/courses/${course.id}`]);
   }
 
   onDelete(data: { event: Event; id: string | number }): void {

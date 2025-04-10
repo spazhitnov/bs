@@ -21,7 +21,7 @@ registerLocaleData(localeRu);
     FooterComponent,
     HeaderComponent,
     CoursesModule,
-    AuthModule
+    AuthModule,
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'ru' }],
   bootstrap: [AppComponent],

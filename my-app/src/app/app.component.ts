@@ -4,7 +4,7 @@ import { AuthService } from './common/services/auth.service';
 import { AutoUnsubscribeDirective } from './common/directives/auto-unsubscribe.directive';
 import { takeUntil } from 'rxjs';
 import { HelperService } from './common/services/helper.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +25,7 @@ export class AppComponent extends AutoUnsubscribeDirective implements OnInit {
   }
 
   ngOnInit(): void {
+    this.router.navigate([''])
     localStorage.clear();
   }
 
@@ -35,7 +36,7 @@ export class AppComponent extends AutoUnsubscribeDirective implements OnInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe((data: User) => {
         this.user.set(data);
-        this.isAuth.set(this.authService.isAuthenticated(data));
+        this.isAuth.set(this.authService.isAuthenticated());
         this.router.navigate(['courses']);
         console.log('Выполнен вход в систему');
       });

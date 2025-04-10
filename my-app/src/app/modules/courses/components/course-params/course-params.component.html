@@ -1,4 +1,4 @@
-<div class="mt-5">
+<div class="my-5">
   <p-card>
     <ng-container *ngIf="course">
       <div class="grid fluid p-4">
@@ -33,7 +33,7 @@
             </span>
           </div>
           <div class="col-12 mb-2">
-            <app-duration [duration]="course.duration"></app-duration>
+            <app-duration [course]="course"></app-duration>
           </div>
           <div class="col-10 mb-2">
             <span class="p-float-label">
