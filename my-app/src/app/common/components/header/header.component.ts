@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, Output } from '@angular/core';
 import { LogoComponent } from '../logo/logo.component';
 import { ButtonModule } from 'primeng/button';
 import { User } from '../../models/user.model';
@@ -10,6 +10,7 @@ import { User } from '../../models/user.model';
   styleUrls: ['./header.component.scss'],
   imports: [CommonModule, LogoComponent, ButtonModule],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
   @Output() logout = new EventEmitter();

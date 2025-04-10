@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { User } from './common/models/user.model';
 import { AuthService } from './common/services/auth.service';
 import { AutoUnsubscribeDirective } from './common/directives/auto-unsubscribe.directive';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent extends AutoUnsubscribeDirective implements OnInit {
   isAuth = signal<boolean>(false);
@@ -44,6 +45,6 @@ export class AppComponent extends AutoUnsubscribeDirective implements OnInit {
     this.authService.onLogout();
     this.isAuth.set(false);
     this.user.set({} as User);
-    this.router.navigate([''])
+    this.router.navigate(['']);
   }
 }

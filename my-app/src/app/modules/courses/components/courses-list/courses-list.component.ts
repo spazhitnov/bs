@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { Course } from 'src/app/common/models/courses.model';
 import { CourseComponent } from './course/course.component';
 import { ButtonModule } from 'primeng/button';
@@ -14,7 +13,8 @@ import { FilterPipe } from 'src/app/common/pipes/filter.pipe';
 import { CoursesService } from 'src/app/common/services/courses.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { BrowserModule } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { HelperService } from 'src/app/common/services/helper.service';
 
 @Component({
   selector: 'app-courses-list',
@@ -22,7 +22,6 @@ import { BrowserModule } from '@angular/platform-browser';
   imports: [
     CommonModule,
     FormsModule,
-    BreadcrumbsComponent,
     CourseComponent,
     ButtonModule,
     InputTextModule,
@@ -44,6 +43,8 @@ export class CoursesListComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private filterPipe: FilterPipe,
+    private router: Router,
+    private helper: HelperService,
     private coursesService: CoursesService
   ) {}
 
@@ -92,5 +93,13 @@ export class CoursesListComponent implements OnInit {
 
   onLoad(): void {
     console.log('Some text');
+  }
+
+  onAdd(): void {
+    this.helper.breadcrumbsItems$.next({
+      label: 'Новый курс',
+      routerLink: '/courses/new',
+    });
+    this.router.navigate(['courses/new']);
   }
 }

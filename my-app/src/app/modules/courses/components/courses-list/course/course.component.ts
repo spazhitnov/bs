@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { Course } from 'src/app/common/models/courses.model';
 import { ButtonModule } from 'primeng/button';
@@ -12,6 +12,7 @@ import { IsnewcourseDirective } from 'src/app/common/directives/isnewcourse.dire
   imports: [CommonModule, CardModule, ButtonModule, DurationPipe, IsnewcourseDirective],
   templateUrl: './course.component.html',
   styleUrl: './course.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CourseComponent {
   @Input() course!: Course;

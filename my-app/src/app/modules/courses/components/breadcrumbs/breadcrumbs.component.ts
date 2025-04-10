@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { takeUntil } from 'rxjs';
+import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubscribe.directive';
+import { HelperService } from 'src/app/common/services/helper.service';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -9,13 +17,36 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
   imports: [CommonModule, BreadcrumbModule],
   templateUrl: './breadcrumbs.component.html',
   styleUrl: './breadcrumbs.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BreadcrumbsComponent {
-  items: MenuItem[] = [
+export class BreadcrumbsComponent
+  extends AutoUnsubscribeDirective
+  implements OnInit
+{
+  items = signal<MenuItem[]>([
     {
       label: 'Курсы',
       icon: 'pi pi-home',
-      routerLink: '/',
+      routerLink: '/courses',
+      command: () => {
+        this.items.set(
+          this.items().filter((item) => {
+            return item.routerLink === '/courses';
+          })
+        );
+      },
     },
-  ];
+  ]);
+
+  constructor(private helper: HelperService) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.helper.breadcrumbsItems$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data: MenuItem) => {
+        this.items.set([...this.items(), data]);
+      });
+  }
 }
