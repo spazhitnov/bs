@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
@@ -34,14 +34,6 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return localStorage.getItem('userToken') ? true : false;
-  }
-
-  GetUserInfo(): string {
-    const info = localStorage.getItem('userInfo');
-    if (info) {
-      return JSON.parse(info)?.email;
-    }
-    return '';
   }
 
   getUserInfo(): Observable<User | null> {

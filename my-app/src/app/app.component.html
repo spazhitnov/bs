@@ -1,7 +1,14 @@
-<app-header [isAuth]="isAuth()" [user]="user()" (logout)="onLogout()"></app-header>
-@if (!isAuth()) {
-<app-auth (login)="onLogin($event)"></app-auth>
-} @if (isAuth()) {
-<router-outlet></router-outlet>
-}
-<app-footer></app-footer>
+<p-toast />
+<div [appLoader]="loader()" class="app-container">
+  <app-header
+    [isAuth]="isAuth()"
+    [user]="user()"
+    (logout)="onLogout()"
+  ></app-header>
+  @if (!isAuth()) {
+  <app-auth (login)="onLogin($event)"></app-auth>
+  } @if (isAuth()) {
+  <router-outlet></router-outlet>
+  }
+  <app-footer></app-footer>
+</div>

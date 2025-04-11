@@ -1,19 +1,22 @@
+<p-toast />
 <p-confirmDialog styleClass="dialog" />
 <div class="grid fluid">
   <div class="col-12 flex justify-content-between">
-    <div class="flex gap-3">
-      <p-iconField iconPosition="left">
-        <p-inputIcon styleClass="pi pi-search" />
-        <input
-          type="text"
-          [(ngModel)]="searchParam"
-          pInputText
-          placeholder="Search"
-        />
-      </p-iconField>
-      <p-button label="Поиск" (click)="onSearch()"></p-button>
-    </div>
-    <p-button icon="pi pi-plus" label="Добавить курс" (click)="onAdd()"></p-button>
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input
+        type="text"
+        (keyup)="onSearch($event)"
+        (blur)="onBlur($event)"
+        pInputText
+        placeholder="Search"
+      />
+    </p-iconField>
+    <p-button
+      icon="pi pi-plus"
+      label="Добавить курс"
+      (click)="onAdd()"
+    ></p-button>
   </div>
   @if (courses().length > 0) {
   <div class="col-12 flex flex-column gap-3">

@@ -9,7 +9,7 @@ import { AuthService } from './common/services/auth.service';
 import { AutoUnsubscribeDirective } from './common/directives/auto-unsubscribe.directive';
 import { takeUntil } from 'rxjs';
 import { HelperService } from './common/services/helper.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -20,10 +20,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class AppComponent extends AutoUnsubscribeDirective implements OnInit {
   isAuth = signal<boolean>(false);
   user = signal<User>({} as User);
+  loader = signal<boolean>(false);
 
   constructor(
     private authService: AuthService,
     private helper: HelperService,
+
     private router: Router
   ) {
     super();
@@ -32,6 +34,11 @@ export class AppComponent extends AutoUnsubscribeDirective implements OnInit {
   ngOnInit(): void {
     this.router.navigate(['']);
     localStorage.clear();
+    this.helper.loading$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data: boolean) => {
+        this.loader.set(data);
+      });
   }
 
   onLogin(user: Partial<User>): void {

@@ -56,8 +56,8 @@ export class CourseParamsComponent
   ) {
     super();
   }
-
   ngOnInit(): void {
+    this.helper.loading$.next(true)
     this.isNew = this.activeRout.snapshot.params['id'] ? false : true
     if (!this.isNew) {
       this.coursesService
@@ -65,13 +65,16 @@ export class CourseParamsComponent
         .pipe(takeUntil(this.destroyed$))
         .subscribe((data) => {
           this.course.set(data);
+          this.helper.loading$.next(false)
         });
     } else {
       this.course.set({ id: this.helper.uuid() } as Course);
+      this.helper.loading$.next(false)
     }
   }
 
   onSave(): void {
+    this.helper.loading$.next(true)
     if (this.isNew) {
       this.coursesService
         .createCourse(this.course())
@@ -90,6 +93,7 @@ export class CourseParamsComponent
   }
 
   onCancel(): void {
+    this.helper.loading$.next(false)
     this.helper.breadcrumbsItems$.next({ routerLink: '/courses' });
     this.router.navigate(['/courses/list']);
   }

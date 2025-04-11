@@ -45,6 +45,6 @@ export class CoursesService {
   }
 
   getListByTitle(title: string): Observable<Course[]> {
-    return this.http.get<Course[]>(`${this.url}/courses?title=${title.toLowerCase()}`);
+    return this.http.get<Course[]>(`${this.url}/courses?title_like=${title.toLowerCase()}`);
   }
 }

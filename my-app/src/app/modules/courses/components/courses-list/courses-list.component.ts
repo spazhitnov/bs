@@ -9,14 +9,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { OrderByPipe } from 'src/app/common/pipes/order-by.pipe';
-import { FilterPipe } from 'src/app/common/pipes/filter.pipe';
 import { CoursesService } from 'src/app/common/services/courses.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/common/services/helper.service';
-import { takeUntil } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil, throttleTime } from 'rxjs';
 import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubscribe.directive';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-courses-list',
@@ -32,23 +32,25 @@ import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubsc
     CardModule,
     OrderByPipe,
     ConfirmDialogModule,
+    ToastModule
   ],
   templateUrl: './courses-list.component.html',
   styleUrl: './courses-list.component.scss',
-  providers: [FilterPipe, ConfirmationService, MessageService],
+  providers: [ConfirmationService, MessageService],
 })
 export class CoursesListComponent
   extends AutoUnsubscribeDirective
   implements OnInit
 {
   courses = signal<Course[]>([]);
-  searchParam!: string;
+  searchParams$ = new Subject<string>();
   page = 1;
+  prevSearchValue!: string;
+  isFirstSearch: boolean = true;
 
   constructor(
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private filterPipe: FilterPipe,
     private router: Router,
     private helper: HelperService,
     private coursesService: CoursesService
@@ -57,29 +59,36 @@ export class CoursesListComponent
   }
 
   ngOnInit(): void {
+    this.searchParams$
+      .pipe(
+        takeUntil(this.destroyed$),
+        filter((value: string) => value.length > 2),
+        throttleTime(250),
+        switchMap((value: string) => {
+          this.helper.loading$.next(true)
+          return this.coursesService.getListByTitle(value)
+        })
+      )
+      .subscribe((data) => {
+        this.courses.set(data);
+        this.helper.loading$.next(false)
+      });
     this.getCourses();
   }
 
   getCourses(): void {
+    // this.helper.loading$.next(true)
     this.coursesService
       .getCourses(this.page)
       .pipe(takeUntil(this.destroyed$))
       .subscribe((data) => {
         this.courses.set(data);
+        this.helper.loading$.next(false)
       });
   }
 
-  onSearch(): void {
-    if (this.searchParam) {
-      this.coursesService
-        .getListByTitle(this.searchParam)
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe((data) => {
-          this.courses.set(data);
-        });
-    } else {
-      this.getCourses();
-    }
+  onSearch(e: any): void {
+    this.searchParams$.next(e.target.value);
   }
 
   onChange(course: Course): void {
@@ -110,6 +119,10 @@ export class CoursesListComponent
   }
 
   onLoad(): void {
+    this.messageService.add({
+      severity: 'error',
+      detail: 'Курс удален',
+    });
     this.page += 1;
     this.getCourses();
   }
@@ -123,6 +136,7 @@ export class CoursesListComponent
   }
 
   deleteCourse(id: string | number): void {
+    this.helper.loading$.next(true)
     this.coursesService
       .removeCourse(id)
       .pipe(takeUntil(this.destroyed$))
@@ -133,5 +147,15 @@ export class CoursesListComponent
         });
         this.getCourses();
       });
+  }
+
+  onBlur(e: any): void {
+    if (!e.target.value && (this.prevSearchValue || this.isFirstSearch)) {
+      this.prevSearchValue = '';
+      this.getCourses();
+    } else {
+      this.isFirstSearch = false;
+      this.prevSearchValue = e.target.value
+    }
   }
 }

@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 })
 export class HelperService {
   breadcrumbsItems$ = new Subject<MenuItem>()
+  loading$ = new Subject<boolean>();
 
   constructor() {}
 
