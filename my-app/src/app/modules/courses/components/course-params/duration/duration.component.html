@@ -1,9 +1,10 @@
-@if (course()) {
-<div class="grid fluid">
+@if (course() && formGroup) {
+<div class="grid fluid" [formGroup]="formGroup">
   <div class="col-10 flex-auto">
     <span class="p-float-label">
       <p-inputNumber
-        [(ngModel)]="course().duration"
+        requiredField
+        formControlName="duration"
         mode="decimal"
         [showButtons]="true"
         inputId="duration"

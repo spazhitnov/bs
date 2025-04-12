@@ -10,6 +10,5 @@ export type Course = {
 
 export type Author = {
     id: number;
-    lastName: string;
     name: string;
 }

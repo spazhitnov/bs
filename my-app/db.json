@@ -700,6 +700,19 @@
           "name": "Carey Jarvis"
         }
       ]
+    },
+    {
+      "id": "287c351f-81c4-45cd-a040-a3e5b151b132",
+      "title": "aaa",
+      "description": "aaa",
+      "duration": 123,
+      "creationDate": "2025-04-11T21:00:00.000Z",
+      "authors": [
+        {
+          "id": "5b7a846290d6ff6894377fb5",
+          "name": "Decker Albert"
+        }
+      ]
     }
   ],
   "users": [
@@ -732,7 +745,7 @@
       "fakeToken": "58ebfdf7ec92657b493b24e5",
       "firstName": "Bilbo",
       "lastName": "Baggins",
-      "email": "a",
+      "email": "a@a",
       "password": "a"
     }
   ],

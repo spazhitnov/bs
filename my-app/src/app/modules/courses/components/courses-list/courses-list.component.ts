@@ -77,7 +77,7 @@ export class CoursesListComponent
   }
 
   getCourses(): void {
-    // this.helper.loading$.next(true)
+    this.helper.loading$.next(true)
     this.coursesService
       .getCourses(this.page)
       .pipe(takeUntil(this.destroyed$))

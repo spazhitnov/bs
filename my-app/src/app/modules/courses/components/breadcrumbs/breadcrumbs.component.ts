@@ -27,11 +27,11 @@ export class BreadcrumbsComponent
     {
       label: 'Курсы',
       icon: 'pi pi-home',
-      routerLink: '/courses',
+      routerLink: '/courses/list',
       command: () => {
         this.items.set(
           this.items().filter((item) => {
-            return item.routerLink === '/courses';
+            return item.routerLink === '/courses/list';
           })
         );
       },
@@ -46,10 +46,10 @@ export class BreadcrumbsComponent
     this.helper.breadcrumbsItems$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((data: MenuItem) => {
-        if (data.routerLink === '/courses') {
+        if (data.routerLink === '/courses/list') {
           this.items.set(
             this.items().filter((item) => {
-              return item.routerLink === '/courses';
+              return item.routerLink === '/courses/list';
             })
           );
         } else {

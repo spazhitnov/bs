@@ -7,18 +7,20 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { AuthComponent } from './auth.component';
+import { RequiredFiledDirective } from 'src/app/common/directives/required-field.directive';
 
 @NgModule({
   declarations: [AuthComponent],
   imports: [
     CommonModule,
-    BrowserModule,
     FormsModule,
+    BrowserModule,
     CardModule,
     InputTextModule,
     PasswordModule,
     ButtonModule,
+    RequiredFiledDirective
   ],
-  exports: [AuthComponent]
+  exports: [AuthComponent],
 })
 export class AuthModule {}

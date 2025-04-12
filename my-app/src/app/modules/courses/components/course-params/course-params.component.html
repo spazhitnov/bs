@@ -1,56 +1,68 @@
 <div class="my-5">
   <p-card>
-    @if (course()) {
-    <div class="grid fluid p-4">
+    @if (course() && formGroup && group) {
+    <div class="grid fluid p-4" [formGroup]="formGroup">
       <div class="col lg:col-8 md:col-10 col-12">
         <div class="col-12 mb-2 pt-0">
           <h2 style="margin: 0">Новый курс</h2>
         </div>
         <div class="col-10 mb-2">
           <span class="p-float-label">
+            <!-- [(ngModel)]="course().title" -->
+
             <input
+              requiredField
               inputId="title"
               type="text"
-              [(ngModel)]="course().title"
+              formControlName="title"
               pInputText
             />
-            <label for="login">Наименование</label>
+            <label for="title">Наименование</label>
           </span>
         </div>
         <div class="col-10 mb-2">
           <span class="p-float-label">
             <textarea
-              id="comment"
+              requiredField
+              id="description"
               [rows]="5"
               pInputTextarea
               [autofocus]="true"
               [autoResize]="true"
-              [(ngModel)]="course().description"
+              formControlName="description"
             ></textarea>
-            <label for="comment">
+            <label for="description">
               <span>Описание</span>
             </label>
           </span>
         </div>
         <div class="col-12 mb-2">
-          <app-duration [course]="course()"></app-duration>
+          <app-duration
+            [course]="course()"
+            (formGroupReady)="addSubForm($event)"
+          ></app-duration>
         </div>
         <div class="col-10 mb-2">
           <span class="p-float-label">
             <p-calendar
-              lxocalizedCalendar
-              [(ngModel)]="course().creationDate"
+              requiredField
+              localizedCalendar
+              id="creationDate"
               dateFormat="dd/mm/yy"
               appendTo="body"
               [showIcon]="true"
+              formControlName="creationDate"
             ></p-calendar>
-            <label for="signingDate">
+            <label for="creationDate">
               <span>Дата</span>
             </label>
           </span>
         </div>
         <div class="col-10 mb-4">
-          <app-authors></app-authors>
+          <app-authors
+            [course]="course()"
+            (formGroupReady)="addSubForm($event)"
+          ></app-authors>
         </div>
         <div class="flex">
           <p-button
@@ -58,7 +70,11 @@
             styleClass="p-button p-button-text"
             (click)="onCancel()"
           ></p-button>
-          <p-button label="Сохранить" (click)="onSave()"></p-button>
+          <p-button
+            disabled="{{ !isValid() }}"
+            label="Сохранить"
+            (click)="onSave()"
+          ></p-button>
         </div>
       </div>
     </div>
