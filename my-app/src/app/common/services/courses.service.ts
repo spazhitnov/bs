@@ -34,13 +34,13 @@ export class CoursesService {
     return this.http.get<Course>(`${this.url}/courses/${id}`);
   }
 
-  updateCourse(newCourse: Course): Observable<Course> {
-    return this.http.put<Course>(`${this.url}/courses/${newCourse.id}`, {
+  updateCourse(newCourse: Course | null): Observable<Course> {
+    return this.http.put<Course>(`${this.url}/courses/${newCourse?.id}`, {
       ...newCourse,
     });
   }
 
-  createCourse(newCourse: Course): Observable<Course> {
+  createCourse(newCourse: Course | null): Observable<Course> {
     return this.http.post<Course>(`${this.url}/courses/`, { ...newCourse });
   }
 

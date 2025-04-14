@@ -3,5 +3,5 @@ import { AuthService } from "../auth.service";
 import { of } from "rxjs";
 
 export function provideGuardForPermission() {
-  return () => of(inject(AuthService).isAuthenticated());
+  return () => inject(AuthService).isAuthenticated();
 }

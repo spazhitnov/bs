@@ -22,10 +22,13 @@ import { HelperService, TForm } from 'src/app/common/services/helper.service';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DurationComponent } from './duration/duration.component';
 import { AuthorsComponent } from './authors/authors.component';
-import { CoursesService } from 'src/app/common/services/courses.service';
 import { takeUntil } from 'rxjs';
 import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubscribe.directive';
 import { RequiredFiledDirective } from 'src/app/common/directives/required-field.directive';
+import { Store } from '@ngrx/store';
+import { State } from 'src/app/store';
+import { getState } from 'src/app/store/courses/selectors/courses.selectors';
+import { CoursesActions } from 'src/app/store/courses/actions/courses.actions';
 
 @Component({
   selector: 'app-course-params',
@@ -58,28 +61,39 @@ export class CourseParamsComponent
   group!: TForm;
 
   constructor(
-    private coursesService: CoursesService,
     private activeRout: ActivatedRoute,
     private helper: HelperService,
-    private router: Router
+    private router: Router,
+    private store: Store<State>
   ) {
     super();
+    store
+      .select(getState)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data) => {
+        if (data.updateCreateSuccess) {
+          store.dispatch(CoursesActions.setSuccessFalse());
+          this.onCancel();
+        }
+        if (data.course) {
+          this.course.set({ ...data.course });
+          if (!this.isNew && !this.formGroup) {
+            this.buildForm();
+          }
+        }
+        this.helper.loading$.next(data.loading);
+      });
   }
   ngOnInit(): void {
-    this.helper.loading$.next(true);
     this.isNew = this.activeRout.snapshot.params['id'] ? false : true;
     if (!this.isNew) {
-      this.coursesService
-        .getCourseById(this.activeRout.snapshot.params['id'])
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe((data) => {
-          this.course.set(data);
-          this.helper.loading$.next(false);
-          this.buildForm();
-        });
+      this.store.dispatch(
+        CoursesActions.getCourseById({
+          id: this.activeRout.snapshot.params['id'],
+        })
+      );
     } else {
       this.course.set({ id: this.helper.uuid() } as Course);
-      this.helper.loading$.next(false);
       this.buildForm();
     }
   }
@@ -121,26 +135,18 @@ export class CourseParamsComponent
   }
 
   onSave(): void {
-    this.helper.loading$.next(true);
     if (this.isNew) {
-      this.coursesService
-        .createCourse(this.course())
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe((data) => {
-          this.onCancel();
-        });
+      this.store.dispatch(
+        CoursesActions.createCourse({ course: this.course() })
+      );
     } else {
-      this.coursesService
-        .updateCourse(this.course())
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe((data) => {
-          this.onCancel();
-        });
+      this.store.dispatch(
+        CoursesActions.updateCourse({ course: this.course() })
+      );
     }
   }
 
   onCancel(): void {
-    this.helper.loading$.next(false);
     this.helper.breadcrumbsItems$.next({ routerLink: '/courses/list' });
     this.router.navigate(['/courses/list']);
   }

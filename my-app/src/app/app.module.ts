@@ -1,4 +1,4 @@
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +15,12 @@ import { LoaderDirective } from './common/directives/loader.diirective';
 import { HttpErrorInterceptor } from './common/services/interceptors/http-error.interceptor';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { CoursesEffects } from './store/courses/effects/courses.effects';
+import { AuthEffects } from './store/auth/effects/auth.effects';
 
 registerLocaleData(localeRu);
 
@@ -31,6 +37,9 @@ registerLocaleData(localeRu);
     HttpClientModule,
     LoaderDirective,
     ToastModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreDevtoolsModule.instrument(),
+    EffectsModule.forRoot([CoursesEffects, AuthEffects])
   ],
   providers: [
     MessageService,

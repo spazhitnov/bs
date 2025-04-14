@@ -14,9 +14,13 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/common/services/helper.service';
-import { filter, Subject, switchMap, takeUntil, throttleTime } from 'rxjs';
+import { filter, map, Subject, takeUntil, throttleTime } from 'rxjs';
 import { AutoUnsubscribeDirective } from 'src/app/common/directives/auto-unsubscribe.directive';
 import { ToastModule } from 'primeng/toast';
+import { Store } from '@ngrx/store';
+import { State } from 'src/app/store';
+import { getState } from 'src/app/store/courses/selectors/courses.selectors';
+import { CoursesActions } from 'src/app/store/courses/actions/courses.actions';
 
 @Component({
   selector: 'app-courses-list',
@@ -32,11 +36,10 @@ import { ToastModule } from 'primeng/toast';
     CardModule,
     OrderByPipe,
     ConfirmDialogModule,
-    ToastModule
   ],
   templateUrl: './courses-list.component.html',
   styleUrl: './courses-list.component.scss',
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
 })
 export class CoursesListComponent
   extends AutoUnsubscribeDirective
@@ -50,12 +53,18 @@ export class CoursesListComponent
 
   constructor(
     private confirmationService: ConfirmationService,
-    private messageService: MessageService,
     private router: Router,
     private helper: HelperService,
-    private coursesService: CoursesService
+    private store: Store<State>
   ) {
     super();
+    store
+      .select(getState)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data) => {
+        this.courses.set([...data.courses]);
+        this.helper.loading$.next(data.loading);
+      });
   }
 
   ngOnInit(): void {
@@ -64,27 +73,14 @@ export class CoursesListComponent
         takeUntil(this.destroyed$),
         filter((value: string) => value.length > 2),
         throttleTime(250),
-        switchMap((value: string) => {
-          this.helper.loading$.next(true)
-          return this.coursesService.getListByTitle(value)
+        map((value: string) => {
+          return this.store.dispatch(
+            CoursesActions.getCoursesByParams({ params: value })
+          );
         })
       )
-      .subscribe((data) => {
-        this.courses.set(data);
-        this.helper.loading$.next(false)
-      });
-    this.getCourses();
-  }
-
-  getCourses(): void {
-    this.helper.loading$.next(true)
-    this.coursesService
-      .getCourses(this.page)
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((data) => {
-        this.courses.set(data);
-        this.helper.loading$.next(false)
-      });
+      .subscribe();
+    this.store.dispatch(CoursesActions.getCourses());
   }
 
   onSearch(e: any): void {
@@ -113,18 +109,15 @@ export class CoursesListComponent
       rejectIcon: 'none',
 
       accept: () => {
-        this.deleteCourse(data.id);
+        this.store.dispatch(CoursesActions.deleteCourse({ id: data.id }));
       },
     });
   }
 
   onLoad(): void {
-    this.messageService.add({
-      severity: 'error',
-      detail: 'Курс удален',
-    });
     this.page += 1;
-    this.getCourses();
+    this.store.dispatch(CoursesActions.setPage({ page: this.page }));
+    this.store.dispatch(CoursesActions.getCourses());
   }
 
   onAdd(): void {
@@ -135,27 +128,13 @@ export class CoursesListComponent
     this.router.navigate(['courses/new']);
   }
 
-  deleteCourse(id: string | number): void {
-    this.helper.loading$.next(true)
-    this.coursesService
-      .removeCourse(id)
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe(() => {
-        this.messageService.add({
-          severity: 'error',
-          detail: 'Курс удален',
-        });
-        this.getCourses();
-      });
-  }
-
   onBlur(e: any): void {
     if (!e.target.value && (this.prevSearchValue || this.isFirstSearch)) {
       this.prevSearchValue = '';
-      this.getCourses();
+      this.store.dispatch(CoursesActions.getCourses());
     } else {
       this.isFirstSearch = false;
-      this.prevSearchValue = e.target.value
+      this.prevSearchValue = e.target.value;
     }
   }
 }

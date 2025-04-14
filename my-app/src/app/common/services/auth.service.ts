@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
@@ -11,14 +11,14 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  onLogin(user: Partial<User>): Observable<User | null> {
+  onLogin(user: Partial<User> | null): Observable<User | null> {
     const params = new HttpParams({
-      fromObject: { email: user.email || '' },
+      fromObject: { email: user?.email || '' },
     });
     return this.http.get<User[]>(`${this.url}/users`, { params }).pipe(
       map((data: User[]) => {
         for (const userData of data) {
-          if (user.password === userData.password) {
+          if (user?.password === userData.password) {
             localStorage.setItem('userToken', userData.fakeToken || '');
             return userData;
           }
@@ -28,12 +28,13 @@ export class AuthService {
     );
   }
 
-  onLogout(): void {
+  onLogout(): Observable<boolean> {
     localStorage.clear();
+    return of(true)
   }
 
-  isAuthenticated(): boolean {
-    return localStorage.getItem('userToken') ? true : false;
+  isAuthenticated(): Observable<boolean> {
+    return of(localStorage.getItem('userToken') ? true : false);
   }
 
   getUserInfo(): Observable<User | null> {
